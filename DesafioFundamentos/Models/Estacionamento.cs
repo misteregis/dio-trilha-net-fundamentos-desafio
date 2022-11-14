@@ -1,3 +1,5 @@
+using static DesafioFundamentos.Program;
+
 namespace DesafioFundamentos.Models
 {
     public class Estacionamento
@@ -14,54 +16,147 @@ namespace DesafioFundamentos.Models
 
         public void AdicionarVeiculo()
         {
-            // TODO: Pedir para o usuário digitar uma placa (ReadLine) e adicionar na lista "veiculos"
-            // *IMPLEMENTE AQUI*
-            Console.WriteLine("Digite a placa do veículo para estacionar:");
+            Title("Cadastrando veículo...");
+
+            Console.Clear();
+            WriteColor("Digite a placa do veículo para estacionar: ", default, false);
+
+            string placa = ReadLine();
+
+            if (CheckValorInformadoVazio(placa))
+            {
+                AdicionarVeiculo();
+            }
+            else
+            {
+                Console.Clear();
+
+                if (TemVeiculo(placa, false) == false)
+                {
+                    Title("Veículo cadastrado!");
+
+                    veiculos.Add(placa.ToUpper());
+
+                    WriteColor($"  O veículo de placa [{placa.ToUpper()}]" +
+                               $" foi adicionado com sucesso!", ConsoleColor.Yellow);
+                }
+            }
         }
 
         public void RemoverVeiculo()
         {
-            Console.WriteLine("Digite a placa do veículo para remover:");
+            ConsoleColor cor = ConsoleColor.Yellow;
 
-            // Pedir para o usuário digitar a placa e armazenar na variável placa
-            // *IMPLEMENTE AQUI*
-            string placa = "";
-
-            // Verifica se o veículo existe
-            if (veiculos.Any(x => x.ToUpper() == placa.ToUpper()))
+            if (TemVeiculo())
             {
-                Console.WriteLine("Digite a quantidade de horas que o veículo permaneceu estacionado:");
+                Console.Clear();
 
-                // TODO: Pedir para o usuário digitar a quantidade de horas que o veículo permaneceu estacionado,
-                // TODO: Realizar o seguinte cálculo: "precoInicial + precoPorHora * horas" para a variável valorTotal                
-                // *IMPLEMENTE AQUI*
-                int horas = 0;
-                decimal valorTotal = 0; 
+                ListarVeiculos();
 
-                // TODO: Remover a placa digitada da lista de veículos
-                // *IMPLEMENTE AQUI*
+                Title("Removendo veículo...");
 
-                Console.WriteLine($"O veículo {placa} foi removido e o preço total foi de: R$ {valorTotal}");
-            }
-            else
-            {
-                Console.WriteLine("Desculpe, esse veículo não está estacionado aqui. Confira se digitou a placa corretamente");
+                WriteColor();
+
+                WriteColor("Digite a placa do veículo do qual deseja remover: ", default, false);
+
+                string placa = ReadLine();
+                
+                if (CheckValorInformadoVazio(placa))
+                {
+                    RemoverVeiculo();
+
+                    return;
+                }
+
+                // Verifica se o veículo existe
+                if (TemVeiculo(placa.ToUpper()))
+                {
+                    Console.Clear();
+
+                    placa = placa.ToUpper();
+
+                    WriteColor($"Removendo veículo de placa: [{placa}]", cor);
+                    WriteColor("Digite a quantidade de horas que o veículo permaneceu estacionado: ", cor, false);
+
+                    string horaInformada = ReadLine();
+
+                    if (CheckValorInformadoVazio(horaInformada))
+                    {
+                        RemoverVeiculo();
+                    }
+                    else
+                    {
+                        Console.Clear();
+
+                        if (horaInformada != null)
+                        {
+                            Title("Veículo removido!");
+
+                            int horas = int.Parse(horaInformada);
+                            string valorTotal = $"R$ {precoInicial + precoPorHora * horas:N}";
+                            
+                            veiculos.Remove(placa);
+
+                            WriteColor($"  O veículo de placa [{placa}] foi removido" +
+                                       $" e o custo total foi de [{valorTotal}].", cor);
+                        }
+                    }
+                }
+                else
+                {
+                    Console.Clear();
+                    WriteColor($"Desculpe, o veículo de placa [{placa}] não está estacionado aqui. " +
+                               $"Confira se digitou a placa corretamente.", ConsoleColor.Yellow);
+                }
             }
         }
 
         public void ListarVeiculos()
         {
+            Title("Listando veículo...");
+
             // Verifica se há veículos no estacionamento
-            if (veiculos.Any())
+            if (TemVeiculo())
             {
-                Console.WriteLine("Os veículos estacionados são:");
-                // TODO: Realizar um laço de repetição, exibindo os veículos estacionados
-                // *IMPLEMENTE AQUI*
+                WriteColor("Os veículos estacionados são:");
+
+                foreach (string placa in veiculos)
+                {
+                    WriteColor($"  • [{placa}];", ConsoleColor.White);
+                }
+            }
+        }
+
+        public bool TemVeiculo(string placa = null, bool mostrarMensagem = true)
+        {
+            bool _return;
+            string _mensagem = string.Empty;
+
+            if (string.IsNullOrEmpty(placa))
+            {
+                _return = veiculos.Any();
+
+                if (_return == false) _mensagem = "  Não há veículos estacionados.";
             }
             else
             {
-                Console.WriteLine("Não há veículos estacionados.");
+                _return = veiculos.Contains(placa.ToUpper());
+                
+                string texto = _return ? "já" : "não";
+
+                _mensagem = $"  O veículo de placa [{placa.ToUpper()}] {texto} se encontra no estacionamento.";
+
             }
+
+            if (mostrarMensagem || _return)
+            {
+                if (!string.IsNullOrEmpty(_mensagem))
+                    WriteColor(_mensagem, ConsoleColor.Yellow);
+
+                Console.ResetColor();
+            }
+
+            return _return;
         }
     }
 }
