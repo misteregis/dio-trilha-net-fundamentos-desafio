@@ -18,8 +18,8 @@ namespace DesafioFundamentos.Models
         {
             Title("Cadastrando veículo...");
 
-            Console.Clear();
-            WriteColor("Digite a placa do veículo para estacionar: ", default, false);
+            LimparConsole();
+            WriteColor("Digite a placa do veículo para estacionar: ", ConsoleColor.White, quebrarLinha: false);
 
             string placa = ReadLine();
 
@@ -29,7 +29,7 @@ namespace DesafioFundamentos.Models
             }
             else
             {
-                Console.Clear();
+                LimparConsole();
 
                 if (TemVeiculo(placa, false) == false)
                 {
@@ -37,19 +37,21 @@ namespace DesafioFundamentos.Models
 
                     veiculos.Add(placa.ToUpper());
 
+                    ConsoleColor[] cores = new ConsoleColor[]{ ConsoleColor.Yellow };
+
                     WriteColor($"  O veículo de placa [{placa.ToUpper()}]" +
-                               $" foi adicionado com sucesso!", ConsoleColor.Yellow);
+                               $" foi adicionado com sucesso!", ConsoleColor.White, cores);
                 }
             }
         }
 
         public void RemoverVeiculo()
         {
-            ConsoleColor cor = ConsoleColor.Yellow;
+            ConsoleColor[] cores = new ConsoleColor[] { ConsoleColor.Yellow };
 
             if (TemVeiculo())
             {
-                Console.Clear();
+                LimparConsole();
 
                 ListarVeiculos();
 
@@ -57,10 +59,10 @@ namespace DesafioFundamentos.Models
 
                 WriteColor();
 
-                WriteColor("Digite a placa do veículo do qual deseja remover: ", default, false);
+                WriteColor("Digite a placa do veículo do qual deseja remover: ", quebrarLinha: false);
 
                 string placa = ReadLine();
-                
+
                 if (CheckValorInformadoVazio(placa))
                 {
                     RemoverVeiculo();
@@ -71,12 +73,14 @@ namespace DesafioFundamentos.Models
                 // Verifica se o veículo existe
                 if (TemVeiculo(placa.ToUpper()))
                 {
-                    Console.Clear();
+                    LimparConsole();
 
                     placa = placa.ToUpper();
 
-                    WriteColor($"Removendo veículo de placa: [{placa}]", cor);
-                    WriteColor("Digite a quantidade de horas que o veículo permaneceu estacionado: ", cor, false);
+                    WriteColor($"Removendo veículo de placa: [{placa}]", ConsoleColor.White, cores);
+                    WriteColor("Digite a quantidade de horas que o veículo permaneceu estacionado: ",
+                        ConsoleColor.White, cores, quebrarLinha: false
+                    );
 
                     string horaInformada = ReadLine();
 
@@ -86,7 +90,7 @@ namespace DesafioFundamentos.Models
                     }
                     else
                     {
-                        Console.Clear();
+                        LimparConsole();
 
                         if (horaInformada != null)
                         {
@@ -94,19 +98,29 @@ namespace DesafioFundamentos.Models
 
                             int horas = int.Parse(horaInformada);
                             string valorTotal = $"R$ {precoInicial + precoPorHora * horas:N}";
-                            
+
                             veiculos.Remove(placa);
 
+                            cores = new ConsoleColor[] {
+                                ConsoleColor.Yellow,
+                                ConsoleColor.Blue
+                            };
+
                             WriteColor($"  O veículo de placa [{placa}] foi removido" +
-                                       $" e o custo total foi de [{valorTotal}].", cor);
+                                       $" e o custo total foi de [{valorTotal}].", ConsoleColor.White, cores);
                         }
                     }
                 }
                 else
                 {
-                    Console.Clear();
+                    placa = placa.ToUpper();
+
+                    LimparConsole();
+
+                    cores = new ConsoleColor[] { ConsoleColor.Red };
+
                     WriteColor($"Desculpe, o veículo de placa [{placa}] não está estacionado aqui. " +
-                               $"Confira se digitou a placa corretamente.", ConsoleColor.Yellow);
+                               $"Confira se digitou a placa corretamente.", ConsoleColor.Yellow, cores);
                 }
             }
         }
@@ -122,7 +136,7 @@ namespace DesafioFundamentos.Models
 
                 foreach (string placa in veiculos)
                 {
-                    WriteColor($"  • [{placa}];", ConsoleColor.White);
+                    WriteColor($"  • [{placa}]", ConsoleColor.White);
                 }
             }
         }
@@ -141,17 +155,19 @@ namespace DesafioFundamentos.Models
             else
             {
                 _return = veiculos.Contains(placa.ToUpper());
-                
+
                 string texto = _return ? "já" : "não";
 
-                _mensagem = $"  O veículo de placa [{placa.ToUpper()}] {texto} se encontra no estacionamento.";
+                _mensagem = $"  Desculpe, o veículo de placa [{placa.ToUpper()}] {texto} se encontra no estacionamento.";
 
             }
 
             if (mostrarMensagem || _return)
             {
-                if (!string.IsNullOrEmpty(_mensagem))
-                    WriteColor(_mensagem, ConsoleColor.Yellow);
+                if (!string.IsNullOrEmpty(_mensagem)) {
+                    ConsoleColor[] cores = new ConsoleColor[] { ConsoleColor.Green };
+                    WriteColor(_mensagem, ConsoleColor.Yellow, cores);
+                }
 
                 Console.ResetColor();
             }

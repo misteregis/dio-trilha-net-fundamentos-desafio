@@ -15,6 +15,11 @@ namespace DesafioFundamentos
             // Coloca o encoding para UTF8 para exibir acentuação
             Console.OutputEncoding = Encoding.UTF8;
 
+            ConsoleColor red = ConsoleColor.Red;
+            ConsoleColor gray = ConsoleColor.Gray;
+            ConsoleColor blue = ConsoleColor.Blue;
+            ConsoleColor yellow = ConsoleColor.Yellow;
+
             Title("Bem-vindo");
 
             string bemVindo = "Seja bem vindo ao sistema de estacionamento!";
@@ -70,13 +75,13 @@ namespace DesafioFundamentos
 
                 LimparConsole();
 
-                ConsoleColor cor = ConsoleColor.Yellow;
+                ConsoleColor[] cores = new ConsoleColor[] { blue, gray, yellow };
 
-                WriteColor($"Sistema de {AppTitle.ToLower()}");
-                WriteColor("  [1] - Cadastrar veículo", cor);
-                WriteColor("  [2] - Remover veículo", cor);
-                WriteColor("  [3] - Listar veículos", cor);
-                WriteColor("  [4] - Encerrar", cor);
+                WriteColor($"Sistema de {AppTitle.ToLower()}", ConsoleColor.White);
+                WriteColor("  [1] [-] [Cadastrar veículo]", cores: cores);
+                WriteColor("  [2] [-] [Remover veículo]", cores: cores);
+                WriteColor("  [3] [-] [Listar veículos]", cores: cores);
+                WriteColor("  [4] [-] [Encerrar]", cores: cores);
 
                 WriteColor();
 
@@ -105,7 +110,7 @@ namespace DesafioFundamentos
                         break;
 
                     default:
-                        WriteColor("  [Opção inválida]", ConsoleColor.Red);
+                        WriteColor("  [Opção inválida]", red);
                         break;
                 }
 
@@ -168,14 +173,32 @@ namespace DesafioFundamentos
         }
 
         /// <summary>
-        /// Método criado para escrever na tela com parte do texto colorido.
+        /// Método criado para escrever na tela o texto colorido.
         /// </summary>
+        /// <example>Exemplo de uso:
+        /// <code>
+        /// WriteColor(
+        ///     mensagem: "[Este] é [apenas] um [teste]...",
+        ///     corPadrao: ConsoleColor.DarkGreen,
+        ///     cores: new ConsoleColor[]{
+        ///         ConsoleColor.Red,
+        ///         ConsoleColor.Yellow,
+        ///         ConsoleColor.Magenta
+        ///     }
+        /// );
+        /// </code>
+        /// </example>
         /// <param name="mensagem">A mensagem que será impressa.</param>
-        /// <param name="cor">A cor do texto.</param>
-        /// <param name="breakline">Falso para não querbrar a linha.</param>
-        public static void WriteColor(string mensagem = "", ConsoleColor cor = default, bool breakline = true)
+        /// <param name="corPadrao">A cor do texto em geral.</param>
+        /// <param name="cores">Uma lista de cores para cada texto entre colchetes.</param>
+        /// <param name="quebrarLinha">Falso para não quebrar a linha.</param>
+        public static void WriteColor(string mensagem = "", ConsoleColor corPadrao = ConsoleColor.Gray, ConsoleColor[] cores = null, bool quebrarLinha = true)
         {
+            int indice = 0;
+
             string[] partes = Regex.Split(mensagem, @"(\[[^\]]*\])");
+
+            Console.ForegroundColor = corPadrao;
 
             for (int i = 0; i < partes.Length; i++)
             {
@@ -183,15 +206,22 @@ namespace DesafioFundamentos
 
                 if (parte.StartsWith("[") && parte.EndsWith("]"))
                 {
-                    Console.ForegroundColor = cor;
+                    if (cores != null) {
+                        if (indice < cores.Length)
+                            Console.ForegroundColor = cores[indice];
+                        else
+                            Console.ForegroundColor = cores[0];
+                    }
+
                     parte = parte.Substring(1, parte.Length - 2);
+                    indice++;
                 }
-                
+
                 Console.Write(parte);
-                Console.ResetColor();
+                Console.ForegroundColor = corPadrao;
             }
 
-            if (breakline)
+            if (quebrarLinha)
                 Console.WriteLine();
         }
 
